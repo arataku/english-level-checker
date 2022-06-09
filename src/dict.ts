@@ -1,4 +1,4 @@
-function csv2Array(
+export function csv2Array(
   csv: string,
   englishCol: number,
   japaneseCol: number
@@ -6,7 +6,7 @@ function csv2Array(
   return csv.split("\n").map((v) => [v[englishCol], v[japaneseCol]]);
 }
 
-function searchWord(
+export function searchWord(
   dictionary: Array<Array<string>>,
   word: string,
   maxLevel: number
