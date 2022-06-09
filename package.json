@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/arataku/english-level-checker/issues"
   },
-  "homepage": "https://github.com/arataku/english-level-checker#readme"
+  "homepage": "https://github.com/arataku/english-level-checker#readme",
+  "dependencies": {
+    "esbuild": "^0.14.43"
+  }
 }
