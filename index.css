@@ -37,6 +37,10 @@ input, textarea {
     height: 7rem;
 }
 
+#input {
+    font-size: 1rem;
+}
+
 #anki_csv, #input {
     margin-top: 1.1rem;
 }
