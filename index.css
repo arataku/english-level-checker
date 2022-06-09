@@ -16,6 +16,8 @@ h1, h2 {
 
 main {
     padding: 1.5rem;
+    width: 100%;
+    max-width: 500px;
 }
 
 main > section {
@@ -26,10 +28,13 @@ input, textarea {
     padding: 0.8rem;
     outline: none;
     font-family: 'Noto Sans JP', sans-serif;
+    width: 100%
 }
 
 #anki_csv {
     color: var(--fg-color);
+    resize: vertical;
+    height: 7rem;
 }
 
 #anki_csv, #input {
