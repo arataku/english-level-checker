@@ -7,7 +7,7 @@ function searchWord(dictionary, word, maxLevel) {
     var _loop_1 = function (i) {
         var tmp = word.slice(0, -count);
         var result = dictionary
-            .slice(0, Math.max(maxLevel, dictionary.length))
+            .slice(0, Math.min(maxLevel, dictionary.length))
             .find(function (v) { return v[0] == tmp; });
         if (result !== undefined) {
             return { value: result[1] };

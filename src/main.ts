@@ -15,7 +15,7 @@ function searchWord(
   for (let i = 0; i < 3; i++) {
     const tmp = word.slice(0, -count);
     const result = dictionary
-      .slice(0, Math.max(maxLevel, dictionary.length))
+      .slice(0, Math.min(maxLevel, dictionary.length))
       .find((v) => v[0] == tmp);
     if (result !== undefined) {
       return result[1];
