@@ -1,0 +1,20 @@
+{
+  "name": "english-level-checker",
+  "version": "1.0.0",
+  "description": "一定よりも高いレベルの単語をハイライトしたり、 日本語に置き換えたりします。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arataku/english-level-checker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arataku/english-level-checker/issues"
+  },
+  "homepage": "https://github.com/arataku/english-level-checker#readme"
+}
