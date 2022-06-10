@@ -10,7 +10,7 @@ class Cursor {
   constructor(public text: string){}
 }
 
-type TokenProcessor = (cursor: Cursor) => Promise<{ color: typeof Colors[keyof typeof Colors] }>;
+type TokenProcessor = (cursor: Cursor) => Promise<{ color: typeof Colors[keyof typeof Colors], refreshedText?: string }>;
 
 export class ResultDisplay {
   private _inputElement: HTMLInputElement | undefined
@@ -166,7 +166,7 @@ class RenderedResultDisplay {
         const d = (await this.processor({ text: splitted.text }));
         const elements = [
           RenderedResultDisplay.colorSpan(splitted.beforeText, 'black'),
-          RenderedResultDisplay.colorSpan(splitted.text, d.color),
+          RenderedResultDisplay.colorSpan(d.refreshedText ?? splitted.text, d.color),
           RenderedResultDisplay.colorSpan(splitted.afterText + ' ', 'black'),
         ];
         generatedTokens.push({

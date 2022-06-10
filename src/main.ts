@@ -6,7 +6,7 @@ new ResultDisplay()
 
   .processor(async c => {
     if(c.text === 'apple') {
-      return { color: Colors.RED };
+      return { color: Colors.RED, refreshedText: 'りんご' };
     } else {
       return { color: Colors.BLACK };
     }
