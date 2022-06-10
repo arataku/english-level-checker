@@ -107,7 +107,7 @@ class RenderedResultDisplay {
     displayDivElement.appendChild(statusTextInstance);
     displayDivElement.appendChild(this.tokenViewer);
 
-    this.inputElement.oninput = async () => {
+    this.inputElement.addEventListener('input',async () => {
       this.statusText.start();
       const text = this.inputElement.value.split(' ');
       await immediate();
@@ -211,6 +211,6 @@ class RenderedResultDisplay {
         needRefreshEnd,
         beginElement
       });
-    };
+    });
   }
 }
