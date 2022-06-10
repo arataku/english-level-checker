@@ -1,15 +1,16 @@
-
 import { Colors, ResultDisplay } from "./resultDisplay";
-import { csv2Array } from "./dict";
+import { csv2Array, searchWord } from "./dict";
 import { convertLevel } from "./convert";
 
 new ResultDisplay()
-  .inputElement(document.getElementById('input'))
-  .displayDivElement(document.getElementById('resultdisplay_main'))
+  .inputElement(document.getElementById("input"))
+  .displayDivElement(document.getElementById("resultdisplay_main"))
 
-  .processor(async c => {
-    if(c.text === 'apple') {
-      return { color: Colors.RED, refreshedText: 'りんご' };
+  .processor(async (c) => {
+    if (dict === undefined) return { color: Colors.BLACK };
+    const tmp = searchWord(dict, c.text, 100000);
+    if (tmp !== undefined) {
+      return { color: Colors.RED, refreshedText: `(${tmp})` };
     } else {
       return { color: Colors.BLACK };
     }
@@ -24,17 +25,3 @@ if (csvInput) {
     dict = csv2Array(csvInput.value, 0, 2);
   };
 }
-
-let EngInput = document.getElementById("input") as HTMLInputElement;
-if (EngInput) {
-  EngInput.oninput = (event) => {
-    const result = document.getElementById("result");
-    if (!result) return;
-    if (dict === undefined) {
-      console.log("undefined");
-      return;
-    }
-    result.innerText = convertLevel(dict, EngInput.value, 100000);
-  };
-}
-

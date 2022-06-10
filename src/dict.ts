@@ -16,9 +16,9 @@ export function searchWord(
 ): string | undefined {
   for (let j = 0; j < 4; j++) {
     for (let i = 0; i < 4; i++) {
-      const tmp = word.slice(0, word.length - i);
+      const tmp = word.slice(word.length - i);
       const result = dictionary
-        .slice(0, Math.min(maxLevel, dictionary.length))
+        .slice(Math.min(maxLevel, dictionary.length))
         .find((v) => v[0].slice(0, v[0].length - j) == tmp);
       if (result !== undefined) {
         return result[1];
