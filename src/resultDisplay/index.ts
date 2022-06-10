@@ -71,7 +71,7 @@ class RenderedResultDisplay {
 
 
   private static splitText(t: string) {
-    const s = t.match(/^([^a-zA-Z-]*)([a-zA-Z-]+)([^a-zA-Z-]*)$/);
+    const s = t.match(/^([^a-zA-Z-\']*)([a-zA-Z-\']+)([^a-zA-Z-\']*)$/);
 
     return s === null ? {
       beforeText: '',
