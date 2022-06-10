@@ -71,7 +71,7 @@ class RenderedResultDisplay {
 
 
   private static splitText(t: string) {
-    const s = t.match(/^([^a-zA-Z-]*)([a-zA-Z-]+)([^a-zA-Z-]*)$/);
+    const s = t.match(/^([^a-zA-Z-\']*)([a-zA-Z-\']+)([^a-zA-Z-\']*)$/);
 
     return s === null ? {
       beforeText: '',
@@ -107,9 +107,12 @@ class RenderedResultDisplay {
     displayDivElement.appendChild(statusTextInstance);
     displayDivElement.appendChild(this.tokenViewer);
 
-    this.inputElement.oninput = async () => {
+    this.inputElement.addEventListener('input',async () => {
       this.statusText.start();
-      const text = this.inputElement.value.split(' ');
+      const value = this.inputElement.value;
+      const text = value === '' ? [] :
+      (value.endsWith(' ') ? value.slice(0, -1) : value).split(' ');
+
       await immediate();
 
       const textSplitted = text.map(RenderedResultDisplay.splitText);
@@ -131,7 +134,7 @@ class RenderedResultDisplay {
         }
       }
 
-      if(needRefreshStart === textSplitted.length) {
+      if(needRefreshStart === textSplitted.length && textSplitted.length !== 0) {
         this.statusText.finish(textSplitted.length);
         return;
       }
@@ -193,7 +196,10 @@ class RenderedResultDisplay {
         this.tokens = generatedTokens;
       } else {
         this.tokens = this.tokens.flatMap((v, i) => {
-          if (i === Math.max(needRefreshStart - 1, 0)) {
+          if(i === 0 && needRefreshStart === 0) {
+            return generatedTokens;
+          }
+          if (i === needRefreshStart - 1) {
             return [v, ...generatedTokens];
           }
           if (needRefreshStart <= i && i <= this.tokens.length - needRefreshEnd - 1) {
@@ -204,6 +210,7 @@ class RenderedResultDisplay {
         });
       }
       this.statusText.finish(this.tokens.length);
+      /*
       console.log({
         textSplitted,
         tokens: this.tokens,
@@ -211,6 +218,7 @@ class RenderedResultDisplay {
         needRefreshEnd,
         beginElement
       });
-    };
+      */
+    });
   }
 }
