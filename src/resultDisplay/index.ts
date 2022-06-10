@@ -110,7 +110,8 @@ class RenderedResultDisplay {
     this.inputElement.addEventListener('input',async () => {
       this.statusText.start();
       const value = this.inputElement.value;
-      const text = (value.endsWith(' ') ? value.slice(0, -1) : value).split(' ');
+      const text = value === '' ? [] :
+      (value.endsWith(' ') ? value.slice(0, -1) : value).split(' ');
 
       await immediate();
 
@@ -133,7 +134,7 @@ class RenderedResultDisplay {
         }
       }
 
-      if(needRefreshStart === textSplitted.length) {
+      if(needRefreshStart === textSplitted.length && textSplitted.length !== 0) {
         this.statusText.finish(textSplitted.length);
         return;
       }
@@ -209,6 +210,7 @@ class RenderedResultDisplay {
         });
       }
       this.statusText.finish(this.tokens.length);
+      /*
       console.log({
         textSplitted,
         tokens: this.tokens,
@@ -216,6 +218,7 @@ class RenderedResultDisplay {
         needRefreshEnd,
         beginElement
       });
+      */
     });
   }
 }
