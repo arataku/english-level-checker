@@ -109,7 +109,9 @@ class RenderedResultDisplay {
 
     this.inputElement.addEventListener('input',async () => {
       this.statusText.start();
-      const text = this.inputElement.value.split(' ');
+      const value = this.inputElement.value;
+      const text = (value.endsWith(' ') ? value.slice(0, -1) : value).split(' ');
+
       await immediate();
 
       const textSplitted = text.map(RenderedResultDisplay.splitText);
