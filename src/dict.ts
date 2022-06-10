@@ -3,7 +3,10 @@ export function csv2Array(
   englishCol: number,
   japaneseCol: number
 ): Array<[string, string]> {
-  return csv.split("\n").map((v) => [v[englishCol], v[japaneseCol]]);
+  return csv.split("\n").map((v) => {
+    let tmp = v.split(",");
+    return [tmp[englishCol], tmp[japaneseCol]];
+  });
 }
 
 export function searchWord(
@@ -11,14 +14,15 @@ export function searchWord(
   word: string,
   maxLevel: number
 ): string | undefined {
-  let count = 0;
-  for (let i = 0; i < 3; i++) {
-    const tmp = word.slice(0, -count);
-    const result = dictionary
-      .slice(0, Math.min(maxLevel, dictionary.length))
-      .find((v) => v[0] == tmp);
-    if (result !== undefined) {
-      return result[1];
+  for (let j = 0; j < 4; j++) {
+    for (let i = 0; i < 4; i++) {
+      const tmp = word.slice(0, word.length - i);
+      const result = dictionary
+        .slice(0, Math.min(maxLevel, dictionary.length))
+        .find((v) => v[0].slice(0, v[0].length - j) == tmp);
+      if (result !== undefined) {
+        return result[1];
+      }
     }
   }
   return undefined;
