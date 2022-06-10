@@ -193,7 +193,10 @@ class RenderedResultDisplay {
         this.tokens = generatedTokens;
       } else {
         this.tokens = this.tokens.flatMap((v, i) => {
-          if (i === Math.max(needRefreshStart - 1, 0)) {
+          if(i === 0 && needRefreshStart === 0) {
+            return generatedTokens;
+          }
+          if (i === needRefreshStart - 1) {
             return [v, ...generatedTokens];
           }
           if (needRefreshStart <= i && i <= this.tokens.length - needRefreshEnd - 1) {
