@@ -1,4 +1,4 @@
-class StatusText {
+export class StatusText {
   constructor(public text: HTMLParagraphElement) {}
 
   startTime: number | null = null;
@@ -22,11 +22,12 @@ class StatusText {
     this.content = `${processed}/${this.wordCount} Words...`;
   }
 
-  finish() {
+  finish(wordCount: number) {
     if(this.startTime !== null) {
-      this.content = `Ready! ${this.wordCount} Words (${new Date().getTime() - this.startTime}ms)`;
+      this.content = `Ready! ${wordCount} Words (${new Date().getTime() - this.startTime}ms)`;
     } else {
-      this.content = `Ready! ${this.wordCount} Words`;
+      this.content = `Ready! ${wordCount} Words`;
     }
   }
+
 }
