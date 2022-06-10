@@ -1,15 +1,15 @@
 
 export const Colors = {
-  red: 'red',
-  orange: 'orange',
-  black: 'black',
+  RED: 'red',
+  ORANGE: 'orange',
+  BLACK: 'black',
 } as const;
 
 class Cursor {
   constructor(public text: string){}
 }
 
-type TokenProcessor = (cursor: Cursor) => Promise<{ color: keyof typeof Colors }>;
+type TokenProcessor = (cursor: Cursor) => Promise<{ color: typeof Colors[keyof typeof Colors] }>;
 
 export class ResultDisplay {
   private _inputElement: HTMLInputElement | undefined
@@ -18,7 +18,7 @@ export class ResultDisplay {
 
   constructor(){}
 
-  inputElement(element: HTMLElement | undefined) {
+  inputElement(element: HTMLElement | null) {
     if(!(element instanceof HTMLInputElement)) {
       throw 'inputElement must be an instance of HTMLInputElement.'
     }
@@ -26,7 +26,7 @@ export class ResultDisplay {
     return this;
   }
 
-  displayDivElement(element: HTMLElement | undefined) {
+  displayDivElement(element: HTMLElement | null) {
     if(!(element instanceof HTMLDivElement)) {
       throw 'displayDivElement must be an instance of HTMLDivElement.'
     }
