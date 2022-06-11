@@ -17,7 +17,7 @@ interface ProccessorResult {
 type TokenProcessor = (
   cursor: Cursor,
   level: number
-) => Promise<ProccessorResult>;
+) => ProccessorResult;
 
 export class ResultDisplay {
   private _textElement: HTMLTextAreaElement | undefined;
@@ -153,7 +153,7 @@ class RenderedResultDisplay {
       }[] = [];
       for(let i = 0; i < this.tokens.length; i++) {
         const token = this.tokens[i];
-        const d = await processor({ text: token.text }, parsedLevel);
+        const d = processor({ text: token.text }, parsedLevel);
         if(d.color !== token.color || d.refreshedText !== token.refreshedText) {
           needToRefreshes.push({
             index: i,
@@ -304,7 +304,7 @@ class RenderedResultDisplay {
         i++
       ) {
         const splitted = textSplitted[i];
-        const d = await this.processor(
+        const d = processor(
           { text: splitted.text },
           parsedLevel,
         );
