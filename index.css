@@ -46,6 +46,10 @@ input, textarea {
   margin-top: 1.1rem;
 }
 
+#resultdisplay_main > div > span.linebreak {
+  display: block;
+}
+
 #resultdisplay_main > div > span.red {
   color: red;
 }
