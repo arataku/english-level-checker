@@ -247,8 +247,10 @@ class RenderedResultDisplay {
           elements,
         });
         elements.forEach((v) => fragment.appendChild(v));
-        this.statusText.processedWordCountRefresh(i - needRefreshStart + 1);
-        await immediate();
+        if((i - needRefreshStart + 1) % 20 === 0) {
+          this.statusText.processedWordCountRefresh(i - needRefreshStart + 1);
+          await immediate();
+        }
       }
 
       beginElement.parentNode?.insertBefore(fragment, beginElement.nextSibling);
