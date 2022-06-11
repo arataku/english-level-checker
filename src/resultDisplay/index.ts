@@ -108,11 +108,13 @@ class RenderedResultDisplay {
 
   private static colorSpan(
     text: string,
-    color: typeof Colors[keyof typeof Colors]
+    color: typeof Colors[keyof typeof Colors],
+    linebreak: boolean = false
   ) {
     const span = document.createElement("span");
     span.textContent = text;
     span.classList.add(color);
+    if(linebreak) span.classList.add('linebreak');
     return span;
   }
 
@@ -143,7 +145,10 @@ class RenderedResultDisplay {
       const text =
         value === ""
           ? []
-          : (value.endsWith(" ") ? value.slice(0, -1) : value).split(" ");
+          : (value.endsWith(" ") ? value.slice(0, -1) : value)
+            .split(/\n/)
+            .map(v => v.split(" "))
+            .flatMap(v => [...v, '\n']);
 
       if (forceRefresh) {
         this.tokens = [];
@@ -222,7 +227,13 @@ class RenderedResultDisplay {
           { text: splitted.text },
           Math.floor(Number(this.levelElement.value))
         );
-        const elements = [
+        const elements = splitted.text === '\n' ? [
+          RenderedResultDisplay.colorSpan(
+            '',
+            'black',
+            true
+          )
+        ] : [
           RenderedResultDisplay.colorSpan(splitted.beforeText, "black"),
           RenderedResultDisplay.colorSpan(
             d.refreshedText ?? splitted.text,

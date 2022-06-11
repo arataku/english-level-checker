@@ -24,9 +24,11 @@ new ResultDisplay()
 const csvInput = document.getElementById("anki_csv");
 const csvInputRefresh = document.getElementById("anki_csv_refresh");
 let dict: Array<[string, string]> | undefined = undefined;
+const level = document.getElementById("level") as HTMLInputElement;
 
 if (localStorage.anki_csv_dict !== undefined) {
   dict = JSON.parse(localStorage.anki_csv_dict);
+  if(dict) level.max = dict.length.toString();
 }
 
 let file = document.getElementById("import_anki_csv_file") as HTMLInputElement;
@@ -35,7 +37,7 @@ file.addEventListener("change", () => {
   reader.onload = () => {
     if (!reader.result) return;
     dict = csv2Array(reader.result?.toString(), 0, 2);
-    let level = document.getElementById("level") as HTMLInputElement;
+    localStorage.anki_csv_dict = JSON.stringify(dict);
     level.max = dict.length.toString();
   };
 
@@ -55,7 +57,6 @@ csvInputRefresh?.addEventListener("click", () => {
       throw "#anki_csv does not exist or is not an instance of HTMLInputElement!";
     }
     dict = csv2Array(csvInput.value, 0, 2);
-    let level = document.getElementById("level") as HTMLInputElement;
     level.max = dict.length.toString();
     localStorage.anki_csv_dict = JSON.stringify(dict);
     alert("データを更新しました。");
