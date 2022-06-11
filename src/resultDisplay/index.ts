@@ -19,18 +19,18 @@ type TokenProcessor = (
 }>;
 
 export class ResultDisplay {
-  private _inputElement: HTMLInputElement | undefined;
+  private _textElement: HTMLTextAreaElement | undefined;
   private _levelElement: HTMLInputElement | undefined;
   private _displayDivElement: HTMLDivElement | undefined;
   private _processor: TokenProcessor | undefined;
 
   constructor() {}
 
-  inputElement(element: HTMLElement | null) {
-    if (!(element instanceof HTMLInputElement)) {
-      throw "inputElement must be an instance of HTMLInputElement.";
+  textElement(element: HTMLElement | null) {
+    if (!(element instanceof HTMLTextAreaElement)) {
+      throw "inputElement must be an instance of HTMLTextAreaElement.";
     }
-    this._inputElement = element;
+    this._textElement = element;
     return this;
   }
 
@@ -57,7 +57,7 @@ export class ResultDisplay {
 
   render() {
     if (
-      this._inputElement === undefined ||
+      this._textElement === undefined ||
       this._levelElement === undefined ||
       this._displayDivElement === undefined ||
       this._processor === undefined
@@ -65,7 +65,7 @@ export class ResultDisplay {
       throw "render must be executed after inputElement, displayDivElement, and processor.";
     }
     new RenderedResultDisplay(
-      this._inputElement,
+      this._textElement,
       this._levelElement,
       this._displayDivElement,
       this._processor
@@ -117,7 +117,7 @@ class RenderedResultDisplay {
   }
 
   constructor(
-    private inputElement: HTMLInputElement,
+    private textElement: HTMLTextAreaElement,
     private levelElement: HTMLInputElement,
     private displayDivElement: HTMLDivElement,
     private processor: TokenProcessor
@@ -139,7 +139,7 @@ class RenderedResultDisplay {
       }
       this.rendering = true;
       this.statusText.start();
-      const value = this.inputElement.value;
+      const value = this.textElement.value;
       const text =
         value === ""
           ? []
@@ -292,7 +292,7 @@ class RenderedResultDisplay {
       this.rendering = false;
     };
 
-    this.inputElement.addEventListener("input", () => render(false));
+    this.textElement.addEventListener("input", () => render(false));
     this.levelElement.addEventListener("input", () => render(true));
   }
 }

@@ -1,14 +1,15 @@
 import { Colors, ResultDisplay } from "./resultDisplay";
 import { csv2Array, searchWord } from "./dict";
-import { convertLevel } from "./convert";
-import { rename } from "fs";
 
 new ResultDisplay()
-  .inputElement(document.getElementById("input"))
+  .textElement(document.getElementById("input"))
   .levelElement(document.getElementById("level"))
   .displayDivElement(document.getElementById("resultdisplay_main"))
-
   .processor(async (c, level) => {
+    let valueElement = document.getElementById(
+      "range_value"
+    ) as HTMLSpanElement;
+    valueElement.textContent = level.toString();
     if (dict === undefined) return { color: Colors.BLACK };
     const tmp = searchWord(dict, c.text, level);
     if (tmp !== undefined) {
@@ -34,7 +35,10 @@ file.addEventListener("change", () => {
   reader.onload = () => {
     if (!reader.result) return;
     dict = csv2Array(reader.result?.toString(), 0, 2);
+    let level = document.getElementById("level") as HTMLInputElement;
+    level.max = dict.length.toString();
   };
+
   if (!file.files) return;
   reader.readAsText(file.files[0], "UTF-8");
 });
@@ -51,6 +55,8 @@ csvInputRefresh?.addEventListener("click", () => {
       throw "#anki_csv does not exist or is not an instance of HTMLInputElement!";
     }
     dict = csv2Array(csvInput.value, 0, 2);
+    let level = document.getElementById("level") as HTMLInputElement;
+    level.max = dict.length.toString();
     localStorage.anki_csv_dict = JSON.stringify(dict);
     alert("データを更新しました。");
   }

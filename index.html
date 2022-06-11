@@ -23,13 +23,16 @@
 
     <section class="input_english">
       <h2>英文を入力する</h2>
-      <input type="text" id="input" placeholder="Paste some text here..." autocomplete="off">
+      <textarea id="input" placeholder="Paste some text here..." autocomplete="off"></textarea>
     </section>
 
     <section class="result">
       <h2>結果</h2>
+      <div style="display: flex;">
+        <input type="range" id="level" min="1" max="1" value="1">
+        <span id="range_value">1</span>
+      </div>
       <div id="resultdisplay_main"></div>
-      <input type="range" id="level" min="1" max="10000" value="1" >
     </section>
   </main>
   <script src="./build/main.js"></script>
