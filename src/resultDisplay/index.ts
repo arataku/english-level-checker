@@ -10,13 +10,14 @@ class Cursor {
   constructor(public text: string) {}
 }
 
+interface ProccessorResult {
+  color: typeof Colors[keyof typeof Colors];
+  refreshedText?: string;
+}
 type TokenProcessor = (
   cursor: Cursor,
   level: number
-) => Promise<{
-  color: typeof Colors[keyof typeof Colors];
-  refreshedText?: string;
-}>;
+) => Promise<ProccessorResult>;
 
 export class ResultDisplay {
   private _textElement: HTMLTextAreaElement | undefined;
@@ -80,6 +81,7 @@ interface Token {
   text: string;
   afterText: string;
   color: typeof Colors[keyof typeof Colors];
+  refreshedText?: string | undefined,
   elements: HTMLSpanElement[];
 }
 class RenderedResultDisplay {
@@ -134,7 +136,82 @@ class RenderedResultDisplay {
     displayDivElement.appendChild(statusTextInstance);
     displayDivElement.appendChild(this.tokenViewer);
 
-    const render = async (forceRefresh: boolean) => {
+    const changeDifficulty = async () => {
+
+      if (this.rendering) {
+        console.warn("It is skipped because render during render.");
+        return;
+      }
+      this.rendering = true;
+
+      this.statusText.start();
+      this.statusText.finishScan(this.tokens.length);
+
+      const needToRefreshes: {
+        index: number,
+        newToken: ProccessorResult,
+      }[] = [];
+      const parsedLevel = Math.floor(Number(this.levelElement.value));
+      for(let i = 0; i < this.tokens.length; i++) {
+        const token = this.tokens[i];
+        const d = await processor({ text: token.text }, parsedLevel);
+        if(d.color !== token.color || d.refreshedText !== token.refreshedText) {
+          needToRefreshes.push({
+            index: i,
+            newToken: d
+          });
+        }
+        if(i % 20 === 0) {
+          this.statusText.processedWordCountRefresh(i);
+          await immediate();
+        }
+      }
+
+      this.statusText.processedWordCountRefresh(this.tokens.length);
+      await immediate();
+
+      this.tokens = this.tokens.map((v, i) => {
+        const a = needToRefreshes.find(v => v.index === i)?.newToken;
+        if(a === undefined) return v;
+
+        const changeStart = i === 0 ? this.startElement : this.tokens[i - 1].elements[
+          this.tokens[i - 1].elements.length - 1
+        ];
+
+        const elements = v.text === "\n"
+        ? [RenderedResultDisplay.colorSpan("", "black", true)]
+        : [
+            RenderedResultDisplay.colorSpan(v.beforeText, "black"),
+            RenderedResultDisplay.colorSpan(
+              a.refreshedText ?? v.text,
+              a.color
+            ),
+            RenderedResultDisplay.colorSpan(
+              v.afterText + " ",
+              "black"
+            ),
+          ];
+
+        v.elements.forEach(v => v.classList.add('toBeDeleted'));
+        //v.elements.forEach(v => v.remove())
+
+        const fragment = document.createDocumentFragment();
+        elements.forEach(v => fragment.appendChild(v));
+        changeStart.parentNode?.insertBefore(fragment, changeStart.nextSibling);
+        return {
+          beforeText: v.beforeText,
+          text: v.text,
+          afterText: v.afterText,
+          ...a,
+          elements
+        }
+      });
+      [...document.getElementsByClassName('toBeDeleted')].forEach(v => v.remove())
+      this.statusText.finish(this.tokens.length);
+      this.rendering = false;
+    };
+
+    const render = async () => {
       if (this.rendering) {
         console.warn("It is skipped because render during render.");
         return;
@@ -150,12 +227,6 @@ class RenderedResultDisplay {
               .map((v) => v.split(" "))
               .flatMap((v) => [...v, "\n"]);
 
-      if (forceRefresh) {
-        this.tokens = [];
-        [...this.tokenViewer.children]
-          .filter((v) => !this.startElement.isEqualNode(v))
-          .forEach((v) => v.classList.add("toBeDelete"));
-      }
       await immediate();
 
       const textSplitted = text.map(RenderedResultDisplay.splitText);
@@ -217,6 +288,8 @@ class RenderedResultDisplay {
       this.statusText.finishScan(
         textSplitted.length - needRefreshEnd - 1 - needRefreshStart
       );
+
+      const parsedLevel = Math.floor(Number(this.levelElement.value));
       for (
         let i = needRefreshStart;
         i <= textSplitted.length - needRefreshEnd - 1;
@@ -225,7 +298,7 @@ class RenderedResultDisplay {
         const splitted = textSplitted[i];
         const d = await this.processor(
           { text: splitted.text },
-          Math.floor(Number(this.levelElement.value))
+          parsedLevel,
         );
         const elements =
           splitted.text === "\n"
@@ -254,11 +327,6 @@ class RenderedResultDisplay {
       }
 
       beginElement.parentNode?.insertBefore(fragment, beginElement.nextSibling);
-      if (forceRefresh) {
-        [...this.tokenViewer.children]
-          .filter((v) => v.classList.contains("toBeDelete"))
-          .forEach((v) => v.remove());
-      }
 
       const toDelete = this.tokens
         .filter(
@@ -305,7 +373,7 @@ class RenderedResultDisplay {
       this.rendering = false;
     };
 
-    this.textElement.addEventListener("input", () => render(false));
-    this.levelElement.addEventListener("input", () => render(true));
+    this.textElement.addEventListener("input", () => render());
+    this.levelElement.addEventListener("input", () => changeDifficulty());
   }
 }
