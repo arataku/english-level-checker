@@ -1,42 +1,50 @@
 export class Search {
-  private cache: [string, string, number][] = [];
-  dict: [string, string][] | undefined = undefined;
+  private cache: { english: string[]; japanese: string[]; idx: number[] } = {
+    english: [],
+    japanese: [],
+    idx: [],
+  };
+  dict:
+    | { english: [string[], string[], string[], string[]]; japanese: string[] }
+    | undefined = undefined;
   constructor() {}
   readCSV(csv: string, englishCol: number, japaneseCol: number) {
-    this.dict = csv.split("\n").map((v) => {
-      let tmp = v.split(",");
-      return [tmp[englishCol], tmp[japaneseCol]];
-    });
+    let tmpDict: {
+      english: [string[], string[], string[], string[]];
+      japanese: string[];
+    } = {
+      english: [[], [], [], []],
+      japanese: [],
+    };
+    for (const value of csv.split("\n")) {
+      let tmp = value.split(",");
+      tmpDict.english.map((v, idx) =>
+        v.push(tmp[0].toLowerCase().slice(0, tmp[englishCol].length - idx))
+      );
+      tmpDict.japanese.push(tmp[japaneseCol]);
+    }
+    this.dict = tmpDict;
   }
   searchWord(word: string, minLevel: number): string | undefined {
-    const tmp = this.cache.findIndex((v) => v[0] === word);
-    if (tmp !== -1 && this.cache[tmp][1]) {
-      if (minLevel <= this.cache[tmp][2]) {
-        return this.cache[tmp][1];
+    const tmp = this.cache.english.indexOf(word);
+    if (tmp !== -1 && this.cache.japanese[tmp]) {
+      if (minLevel <= this.cache.idx[tmp]) {
+        return this.cache.japanese[tmp];
       } else {
         return undefined;
       }
     }
     if (this.dict === undefined) return undefined;
+    const safeDict = this.dict;
     for (let j = 0; j < 4; j++) {
       for (let i = 0; i < 4; i++) {
         const tmp = word.slice(0, word.length - i).toLowerCase();
-        const idx = this.dict.findIndex(
-          (v) => v[0].slice(0, v[0].length - j).toLowerCase() == tmp
-        );
+        const idx = this.dict.english[j].indexOf(tmp);
         if (idx !== -1) {
-          if (
-            !this.cache.some((v) => {
-              if (this.dict === undefined) {
-                return false;
-              } else {
-                return v[0] === this.dict[idx][0];
-              }
-            })
-          )
-            this.cache.push([word, this.dict[idx][1], idx]);
-          if (idx >= minLevel && this.dict[idx][1]) {
-            return this.dict[idx][1];
+          if (!this.cache.english.includes(safeDict.english[0][idx]))
+            this.addCache(word, this.dict.japanese[idx], idx);
+          if (idx >= minLevel && this.dict.japanese[idx]) {
+            return this.dict.japanese[idx];
           } else {
             return undefined;
           }
@@ -44,5 +52,10 @@ export class Search {
       }
     }
     return undefined;
+  }
+  private addCache(english: string, japanese: string, idx: number) {
+    this.cache.english.push(english);
+    this.cache.japanese.push(japanese);
+    this.cache.idx.push(idx);
   }
 }

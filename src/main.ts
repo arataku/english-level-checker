@@ -25,7 +25,7 @@ const level = document.getElementById("level") as HTMLInputElement;
 
 if (localStorage.anki_csv_dict !== undefined) {
   search.dict = JSON.parse(localStorage.anki_csv_dict);
-  if (search.dict) level.max = search.dict.length.toString();
+  if (search.dict) level.max = search.dict.japanese.length.toString();
 }
 
 let file = document.getElementById("import_anki_csv_file") as HTMLInputElement;
@@ -36,7 +36,7 @@ file.addEventListener("change", () => {
     search.readCSV(reader.result?.toString(), 0, 2);
     localStorage.anki_csv_dict = JSON.stringify(search.dict);
     if (search?.dict) {
-      level.max = search.dict.length.toString();
+      level.max = search.dict.japanese.length.toString();
     } else {
       level.max = "1";
     }
@@ -59,7 +59,7 @@ csvInputRefresh?.addEventListener("click", () => {
     }
     search.readCSV(csvInput.value, 0, 2);
     if (search?.dict) {
-      level.max = search.dict.length.toString();
+      level.max = search.dict.japanese.length.toString();
     } else {
       level.max = "1";
     }
