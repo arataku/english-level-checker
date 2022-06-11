@@ -169,6 +169,7 @@ class RenderedResultDisplay {
       this.statusText.processedWordCountRefresh(this.tokens.length);
       await immediate();
 
+      const toBeRemove: HTMLElement[] = [];
       this.tokens = this.tokens.map((v, i) => {
         const a = needToRefreshes.find(v => v.index === i)?.newToken;
         if(a === undefined) return v;
@@ -191,8 +192,7 @@ class RenderedResultDisplay {
             ),
           ];
 
-        v.elements.forEach(v => v.classList.add('toBeDeleted'));
-        //v.elements.forEach(v => v.remove())
+        toBeRemove.push(...v.elements);
 
         const fragment = document.createDocumentFragment();
         elements.forEach(v => fragment.appendChild(v));
@@ -205,7 +205,7 @@ class RenderedResultDisplay {
           elements
         }
       });
-      [...document.getElementsByClassName('toBeDeleted')].forEach(v => v.remove())
+      toBeRemove.forEach(v => v.remove())
       this.statusText.finish(this.tokens.length);
 
       await immediate();
