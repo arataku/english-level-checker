@@ -10,8 +10,12 @@ export class Search {
   }
   searchWord(word: string, minLevel: number): string | undefined {
     const tmp = this.cache.findIndex((v) => v[0] === word);
-    if (tmp !== -1 && minLevel <= this.cache[tmp][2] && this.cache[tmp][1]) {
-      return this.cache[tmp][1];
+    if (tmp !== -1 && this.cache[tmp][1]) {
+      if (minLevel <= this.cache[tmp][2]) {
+        return this.cache[tmp][1];
+      } else {
+        return undefined;
+      }
     }
     if (this.dict === undefined) return undefined;
     for (let j = 0; j < 4; j++) {

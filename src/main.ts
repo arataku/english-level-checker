@@ -12,6 +12,7 @@ new ResultDisplay()
     valueElement.textContent = level.toString();
     if (search.dict === undefined) return { color: Colors.BLACK };
     const tmp = search.searchWord(c.text, level);
+    //const tmp = "hoge";
     if (tmp !== undefined) {
       return { color: Colors.RED, refreshedText: `${c.text}(${tmp})` };
     } else {
