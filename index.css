@@ -53,3 +53,8 @@ input, textarea {
 #resultdisplay_main > div > span.orange {
   color: orange;
 }
+
+button {
+  display: block;
+  cursor: pointer;
+}
