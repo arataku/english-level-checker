@@ -133,12 +133,11 @@ class RenderedResultDisplay {
     displayDivElement.appendChild(this.tokenViewer);
 
     const render = async (forceRefresh: boolean) => {
-      if(this.rendering) {
-        console.warn('It is skipped because render during render.');
+      if (this.rendering) {
+        console.warn("It is skipped because render during render.");
         return;
       }
       this.rendering = true;
-      console.log(this.levelElement.value);
       this.statusText.start();
       const value = this.inputElement.value;
       const text =
@@ -146,11 +145,11 @@ class RenderedResultDisplay {
           ? []
           : (value.endsWith(" ") ? value.slice(0, -1) : value).split(" ");
 
-      if(forceRefresh) {
+      if (forceRefresh) {
         this.tokens = [];
         [...this.tokenViewer.children]
-          .filter(v => !this.startElement.isEqualNode(v))
-          .forEach(v => v.classList.add('toBeDelete'));
+          .filter((v) => !this.startElement.isEqualNode(v))
+          .forEach((v) => v.classList.add("toBeDelete"));
       }
       await immediate();
 
@@ -213,14 +212,12 @@ class RenderedResultDisplay {
       this.statusText.finishScan(
         textSplitted.length - needRefreshEnd - 1 - needRefreshStart
       );
-      console.log("piyo");
       for (
         let i = needRefreshStart;
         i <= textSplitted.length - needRefreshEnd - 1;
         i++
       ) {
         const splitted = textSplitted[i];
-        console.log(this.levelElement.value + "だよ");
         const d = await this.processor(
           { text: splitted.text },
           Math.floor(Number(this.levelElement.value))
@@ -243,12 +240,11 @@ class RenderedResultDisplay {
         await immediate();
       }
 
-
       beginElement.parentNode?.insertBefore(fragment, beginElement.nextSibling);
-      if(forceRefresh) {
+      if (forceRefresh) {
         [...this.tokenViewer.children]
-          .filter(v => v.classList.contains('toBeDelete'))
-          .forEach(v => v.remove());
+          .filter((v) => v.classList.contains("toBeDelete"))
+          .forEach((v) => v.remove());
       }
 
       const toDelete = this.tokens

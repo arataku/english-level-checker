@@ -14,7 +14,6 @@ export function searchWord(
   word: string,
   maxLevel: number
 ): string | undefined {
-  console.log(maxLevel + "だよん");
   for (let j = 0; j < 4; j++) {
     for (let i = 0; i < 4; i++) {
       const tmp = word.slice(0, word.length - i);
