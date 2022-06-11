@@ -1,6 +1,7 @@
 import { Colors, ResultDisplay } from "./resultDisplay";
 import { csv2Array, searchWord } from "./dict";
 import { convertLevel } from "./convert";
+import { rename } from "fs";
 
 new ResultDisplay()
   .inputElement(document.getElementById("input"))
@@ -26,3 +27,14 @@ if (csvInput) {
     dict = csv2Array(csvInput.value, 0, 2);
   };
 }
+
+let file = document.getElementById("import_anki_csv_file") as HTMLInputElement;
+file.addEventListener("change", () => {
+  let reader = new FileReader();
+  reader.onload = () => {
+    if (!reader.result) return;
+    dict = csv2Array(reader.result?.toString(), 0, 2);
+  };
+  if (!file.files) return;
+  reader.readAsText(file.files[0], "UTF-8");
+});
