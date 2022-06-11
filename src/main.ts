@@ -12,7 +12,7 @@ new ResultDisplay()
     if (dict === undefined) return { color: Colors.BLACK };
     const tmp = searchWord(dict, c.text, level);
     if (tmp !== undefined) {
-      return { color: Colors.RED, refreshedText: `(${tmp})` };
+      return { color: Colors.RED, refreshedText: `${c.text}(${tmp})` };
     } else {
       return { color: Colors.BLACK };
     }

@@ -12,16 +12,20 @@ export function csv2Array(
 export function searchWord(
   dictionary: Array<Array<string>>,
   word: string,
-  maxLevel: number
+  minLevel: number
 ): string | undefined {
   for (let j = 0; j < 4; j++) {
     for (let i = 0; i < 4; i++) {
       const tmp = word.slice(0, word.length - i).toLowerCase();
-      const result = dictionary
-        .slice(Math.min(maxLevel, dictionary.length))
-        .find((v) => v[0].slice(0, v[0].length - j).toLowerCase() == tmp);
-      if (result !== undefined) {
-        return result[1];
+      const idx = dictionary.findIndex(
+        (v) => v[0].slice(0, v[0].length - j).toLowerCase() == tmp
+      );
+      if (idx !== undefined) {
+        if (idx >= minLevel) {
+          return dictionary[idx][1];
+        } else {
+          return undefined;
+        }
       }
     }
   }
