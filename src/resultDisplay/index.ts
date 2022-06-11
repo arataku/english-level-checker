@@ -136,7 +136,7 @@ class RenderedResultDisplay {
     displayDivElement.appendChild(statusTextInstance);
     displayDivElement.appendChild(this.tokenViewer);
 
-    const changeDifficulty = async () => {
+    const changeDifficulty = async (parsedLevel: number) => {
 
       if (this.rendering) {
         console.warn("It is skipped because render during render.");
@@ -151,7 +151,6 @@ class RenderedResultDisplay {
         index: number,
         newToken: ProccessorResult,
       }[] = [];
-      const parsedLevel = Math.floor(Number(this.levelElement.value));
       for(let i = 0; i < this.tokens.length; i++) {
         const token = this.tokens[i];
         const d = await processor({ text: token.text }, parsedLevel);
@@ -374,6 +373,18 @@ class RenderedResultDisplay {
     };
 
     this.textElement.addEventListener("input", () => render());
-    this.levelElement.addEventListener("input", () => changeDifficulty());
+
+    const levelRefresh = () => {
+      const parsedLevel = Math.floor(Number(this.levelElement.value));
+      let valueElement = document.getElementById(
+        "range_value"
+      ) as HTMLSpanElement;
+      valueElement.textContent = parsedLevel.toString();
+
+      changeDifficulty(parsedLevel);
+    }
+
+    this.levelElement.addEventListener("input", () => levelRefresh());
+    this.levelElement.addEventListener("change", () => levelRefresh());
   }
 }
