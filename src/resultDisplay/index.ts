@@ -207,6 +207,15 @@ class RenderedResultDisplay {
       });
       [...document.getElementsByClassName('toBeDeleted')].forEach(v => v.remove())
       this.statusText.finish(this.tokens.length);
+
+      await immediate();
+      const parsedLevelNewer = Math.floor(Number(this.levelElement.value));
+      if(parsedLevel !== parsedLevelNewer) {
+        this.rendering = false;
+        console.log(`Playback: ${parsedLevelNewer}`)
+        changeDifficulty(parsedLevelNewer);
+        return;
+      }
       this.rendering = false;
     };
 
