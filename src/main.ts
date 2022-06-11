@@ -4,11 +4,12 @@ import { convertLevel } from "./convert";
 
 new ResultDisplay()
   .inputElement(document.getElementById("input"))
+  .levelElement(document.getElementById("level"))
   .displayDivElement(document.getElementById("resultdisplay_main"))
 
-  .processor(async (c) => {
+  .processor(async (c, level) => {
     if (dict === undefined) return { color: Colors.BLACK };
-    const tmp = searchWord(dict, c.text, 100000);
+    const tmp = searchWord(dict, c.text, level);
     if (tmp !== undefined) {
       return { color: Colors.RED, refreshedText: `(${tmp})` };
     } else {

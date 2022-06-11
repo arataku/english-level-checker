@@ -1,35 +1,50 @@
 import { StatusText } from "./statusText";
 
 export const Colors = {
-  RED: 'red',
-  ORANGE: 'orange',
-  BLACK: 'black',
+  RED: "red",
+  ORANGE: "orange",
+  BLACK: "black",
 } as const;
 
 class Cursor {
-  constructor(public text: string){}
+  constructor(public text: string) {}
 }
 
-type TokenProcessor = (cursor: Cursor) => Promise<{ color: typeof Colors[keyof typeof Colors], refreshedText?: string }>;
+type TokenProcessor = (
+  cursor: Cursor,
+  level: number
+) => Promise<{
+  color: typeof Colors[keyof typeof Colors];
+  refreshedText?: string;
+}>;
 
 export class ResultDisplay {
-  private _inputElement: HTMLInputElement | undefined
-  private _displayDivElement: HTMLDivElement | undefined
-  private _processor: TokenProcessor | undefined
+  private _inputElement: HTMLInputElement | undefined;
+  private _levelElement: HTMLInputElement | undefined;
+  private _displayDivElement: HTMLDivElement | undefined;
+  private _processor: TokenProcessor | undefined;
 
-  constructor(){}
+  constructor() {}
 
   inputElement(element: HTMLElement | null) {
-    if(!(element instanceof HTMLInputElement)) {
-      throw 'inputElement must be an instance of HTMLInputElement.'
+    if (!(element instanceof HTMLInputElement)) {
+      throw "inputElement must be an instance of HTMLInputElement.";
     }
     this._inputElement = element;
     return this;
   }
 
+  levelElement(element: HTMLElement | null) {
+    if (!(element instanceof HTMLInputElement)) {
+      throw "levelElement must be an instance of HTMLInputElement.";
+    }
+    this._levelElement = element;
+    return this;
+  }
+
   displayDivElement(element: HTMLElement | null) {
-    if(!(element instanceof HTMLDivElement)) {
-      throw 'displayDivElement must be an instance of HTMLDivElement.'
+    if (!(element instanceof HTMLDivElement)) {
+      throw "displayDivElement must be an instance of HTMLDivElement.";
     }
     this._displayDivElement = element;
     return this;
@@ -41,52 +56,59 @@ export class ResultDisplay {
   }
 
   render() {
-    if(
+    if (
       this._inputElement === undefined ||
+      this._levelElement === undefined ||
       this._displayDivElement === undefined ||
       this._processor === undefined
     ) {
-      throw 'render must be executed after inputElement, displayDivElement, and processor.'
+      throw "render must be executed after inputElement, displayDivElement, and processor.";
     }
-    new RenderedResultDisplay(this._inputElement, this._displayDivElement, this._processor);
+    new RenderedResultDisplay(
+      this._inputElement,
+      this._levelElement,
+      this._displayDivElement,
+      this._processor
+    );
   }
-
 }
 
-const immediate = () => new Promise(resolve => setTimeout(resolve, 0));
+const immediate = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 interface Token {
-  beforeText: string,
-  text: string,
-  afterText: string,
-  color: typeof Colors[keyof typeof Colors],
-  elements: HTMLSpanElement[],
+  beforeText: string;
+  text: string;
+  afterText: string;
+  color: typeof Colors[keyof typeof Colors];
+  elements: HTMLSpanElement[];
 }
 class RenderedResultDisplay {
-
   tokenViewer: HTMLDivElement;
   statusText: StatusText;
   startElement: HTMLSpanElement;
   tokens: Token[] = [];
 
-
   private static splitText(t: string) {
     const s = t.match(/^([^a-zA-Z-\']*)([a-zA-Z-\']+)([^a-zA-Z-\']*)$/);
 
-    return s === null ? {
-      beforeText: '',
-      text: t,
-      afterText: '',
-    } : {
-      beforeText: s[1],
-      text: s[2],
-      afterText: s[3]
-    }
-
+    return s === null
+      ? {
+          beforeText: "",
+          text: t,
+          afterText: "",
+        }
+      : {
+          beforeText: s[1],
+          text: s[2],
+          afterText: s[3],
+        };
   }
 
-  private static colorSpan(text: string, color: typeof Colors[keyof typeof Colors]) {
-    const span = document.createElement('span');
+  private static colorSpan(
+    text: string,
+    color: typeof Colors[keyof typeof Colors]
+  ) {
+    const span = document.createElement("span");
     span.textContent = text;
     span.classList.add(color);
     return span;
@@ -94,24 +116,28 @@ class RenderedResultDisplay {
 
   constructor(
     private inputElement: HTMLInputElement,
+    private levelElement: HTMLInputElement,
     private displayDivElement: HTMLDivElement,
-    private processor: TokenProcessor,
-  ){
-    const statusTextInstance = document.createElement('p');
+    private processor: TokenProcessor
+  ) {
+    const statusTextInstance = document.createElement("p");
     this.statusText = new StatusText(statusTextInstance);
-    this.tokenViewer = document.createElement('div');
-    this.startElement = document.createElement('span');
+    this.tokenViewer = document.createElement("div");
+    this.startElement = document.createElement("span");
 
     this.tokenViewer.appendChild(this.startElement);
 
     displayDivElement.appendChild(statusTextInstance);
     displayDivElement.appendChild(this.tokenViewer);
 
-    this.inputElement.addEventListener('input',async () => {
+    const render = async () => {
+      console.log(this.levelElement.value);
       this.statusText.start();
       const value = this.inputElement.value;
-      const text = value === '' ? [] :
-      (value.endsWith(' ') ? value.slice(0, -1) : value).split(' ');
+      const text =
+        value === ""
+          ? []
+          : (value.endsWith(" ") ? value.slice(0, -1) : value).split(" ");
 
       await immediate();
 
@@ -120,10 +146,14 @@ class RenderedResultDisplay {
       let needRefreshStart = 0;
       let needRefreshEnd = 0;
 
-      for(let i = 0; i < Math.min(textSplitted.length, this.tokens.length); i++) {
+      for (
+        let i = 0;
+        i < Math.min(textSplitted.length, this.tokens.length);
+        i++
+      ) {
         const targetSplitted = textSplitted[i];
         const tokenSplitted = this.tokens[i];
-        if(
+        if (
           targetSplitted.text === tokenSplitted.text &&
           targetSplitted.beforeText === tokenSplitted.beforeText &&
           targetSplitted.afterText === tokenSplitted.afterText
@@ -134,18 +164,17 @@ class RenderedResultDisplay {
         }
       }
 
-      if(needRefreshStart === textSplitted.length && textSplitted.length !== 0) {
-        this.statusText.finish(textSplitted.length);
-        return;
-      }
-
       await immediate();
 
-      for(let i = 0; i < Math.min(textSplitted.length, this.tokens.length); i++) {
+      for (
+        let i = 0;
+        i < Math.min(textSplitted.length, this.tokens.length);
+        i++
+      ) {
         const targetSplitted = textSplitted[textSplitted.length - i - 1];
         const tokenSplitted = this.tokens[this.tokens.length - i - 1];
 
-        if(
+        if (
           targetSplitted.text === tokenSplitted.text &&
           targetSplitted.beforeText === tokenSplitted.beforeText &&
           targetSplitted.afterText === tokenSplitted.afterText
@@ -158,26 +187,45 @@ class RenderedResultDisplay {
 
       await immediate();
 
-      const beginElement = needRefreshStart === 0 ? this.startElement : this.tokens[needRefreshStart - 1].elements[this.tokens[needRefreshStart - 1].elements.length - 1];
+      const beginElement =
+        needRefreshStart === 0
+          ? this.startElement
+          : this.tokens[needRefreshStart - 1].elements[
+              this.tokens[needRefreshStart - 1].elements.length - 1
+            ];
 
       const fragment = document.createDocumentFragment();
       const generatedTokens: Token[] = [];
 
-      this.statusText.finishScan(textSplitted.length - needRefreshEnd - 1 - needRefreshStart);
-      for(let i = needRefreshStart; i <= textSplitted.length - needRefreshEnd - 1; i++) {
+      this.statusText.finishScan(
+        textSplitted.length - needRefreshEnd - 1 - needRefreshStart
+      );
+      console.log("piyo");
+      for (
+        let i = needRefreshStart;
+        i <= textSplitted.length - needRefreshEnd - 1;
+        i++
+      ) {
         const splitted = textSplitted[i];
-        const d = (await this.processor({ text: splitted.text }));
+        console.log(this.levelElement.value + "だよ");
+        const d = await this.processor(
+          { text: splitted.text },
+          Math.floor(Number(this.levelElement.value))
+        );
         const elements = [
-          RenderedResultDisplay.colorSpan(splitted.beforeText, 'black'),
-          RenderedResultDisplay.colorSpan(d.refreshedText ?? splitted.text, d.color),
-          RenderedResultDisplay.colorSpan(splitted.afterText + ' ', 'black'),
+          RenderedResultDisplay.colorSpan(splitted.beforeText, "black"),
+          RenderedResultDisplay.colorSpan(
+            d.refreshedText ?? splitted.text,
+            d.color
+          ),
+          RenderedResultDisplay.colorSpan(splitted.afterText + " ", "black"),
         ];
         generatedTokens.push({
           ...splitted,
           ...d,
-          elements
+          elements,
         });
-        elements.forEach(v => fragment.appendChild(v));
+        elements.forEach((v) => fragment.appendChild(v));
         this.statusText.processedWordCountRefresh(i - needRefreshStart + 1);
         await immediate();
       }
@@ -185,24 +233,31 @@ class RenderedResultDisplay {
       beginElement.parentNode?.insertBefore(fragment, beginElement.nextSibling);
 
       const toDelete = this.tokens
-        .filter((_, i) => needRefreshStart <= i && i <= this.tokens.length - needRefreshEnd - 1)
-        .flatMap(v => v.elements);
+        .filter(
+          (_, i) =>
+            needRefreshStart <= i &&
+            i <= this.tokens.length - needRefreshEnd - 1
+        )
+        .flatMap((v) => v.elements);
 
       console.log(toDelete);
 
-      toDelete.forEach(v => v.remove());
+      toDelete.forEach((v) => v.remove());
 
       if (this.tokens.length === 0) {
         this.tokens = generatedTokens;
       } else {
         this.tokens = this.tokens.flatMap((v, i) => {
-          if(i === 0 && needRefreshStart === 0) {
+          if (i === 0 && needRefreshStart === 0) {
             return generatedTokens;
           }
           if (i === needRefreshStart - 1) {
             return [v, ...generatedTokens];
           }
-          if (needRefreshStart <= i && i <= this.tokens.length - needRefreshEnd - 1) {
+          if (
+            needRefreshStart <= i &&
+            i <= this.tokens.length - needRefreshEnd - 1
+          ) {
             return [];
           } else {
             return [v];
@@ -219,6 +274,9 @@ class RenderedResultDisplay {
         beginElement
       });
       */
-    });
+    };
+
+    this.inputElement.addEventListener("input", render);
+    this.levelElement.addEventListener("input", render);
   }
 }
