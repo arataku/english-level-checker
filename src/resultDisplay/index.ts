@@ -88,6 +88,8 @@ class RenderedResultDisplay {
   startElement: HTMLSpanElement;
   tokens: Token[] = [];
 
+  rendering: boolean = false;
+
   private static splitText(t: string) {
     const s = t.match(/^([^a-zA-Z-\']*)([a-zA-Z-\']+)([^a-zA-Z-\']*)$/);
 
@@ -130,7 +132,12 @@ class RenderedResultDisplay {
     displayDivElement.appendChild(statusTextInstance);
     displayDivElement.appendChild(this.tokenViewer);
 
-    const render = async () => {
+    const render = async (forceRefresh: boolean) => {
+      if(this.rendering) {
+        console.warn('It is skipped because render during render.');
+        return;
+      }
+      this.rendering = true;
       console.log(this.levelElement.value);
       this.statusText.start();
       const value = this.inputElement.value;
@@ -139,6 +146,12 @@ class RenderedResultDisplay {
           ? []
           : (value.endsWith(" ") ? value.slice(0, -1) : value).split(" ");
 
+      if(forceRefresh) {
+        this.tokens = [];
+        [...this.tokenViewer.children]
+          .filter(v => !this.startElement.isEqualNode(v))
+          .forEach(v => v.classList.add('toBeDelete'));
+      }
       await immediate();
 
       const textSplitted = text.map(RenderedResultDisplay.splitText);
@@ -230,7 +243,13 @@ class RenderedResultDisplay {
         await immediate();
       }
 
+
       beginElement.parentNode?.insertBefore(fragment, beginElement.nextSibling);
+      if(forceRefresh) {
+        [...this.tokenViewer.children]
+          .filter(v => v.classList.contains('toBeDelete'))
+          .forEach(v => v.remove());
+      }
 
       const toDelete = this.tokens
         .filter(
@@ -274,9 +293,10 @@ class RenderedResultDisplay {
         beginElement
       });
       */
+      this.rendering = false;
     };
 
-    this.inputElement.addEventListener("input", render);
-    this.levelElement.addEventListener("input", render);
+    this.inputElement.addEventListener("input", () => render(false));
+    this.levelElement.addEventListener("input", () => render(true));
   }
 }
