@@ -6,10 +6,6 @@ new ResultDisplay()
   .levelElement(document.getElementById("level"))
   .displayDivElement(document.getElementById("resultdisplay_main"))
   .processor(async (c, level) => {
-    let valueElement = document.getElementById(
-      "range_value"
-    ) as HTMLSpanElement;
-    valueElement.textContent = level.toString();
     if (search.dict === undefined) return { color: Colors.BLACK };
     const tmp = search.searchWord(c.text, level);
     //const tmp = "hoge";
