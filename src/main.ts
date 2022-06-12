@@ -19,22 +19,32 @@ new ResultDisplay()
   .render();
 
 const search = new Search();
-const csvInput = document.getElementById("anki_csv");
-const csvInputRefresh = document.getElementById("anki_csv_refresh");
+const txtInput = document.getElementById("anki_txt");
+const txtInputRefresh = document.getElementById("anki_txt_refresh");
 const level = document.getElementById("level") as HTMLInputElement;
+const englishCol = document.getElementById(
+  "anki_setting_english_col"
+) as HTMLInputElement;
+const japaneseCol = document.getElementById(
+  "anki_setting_japanese_col"
+) as HTMLInputElement;
 
-if (localStorage.anki_csv_dict !== undefined) {
-  search.dict = JSON.parse(localStorage.anki_csv_dict);
+if (localStorage.anki_txt_dict !== undefined) {
+  search.dict = JSON.parse(localStorage.anki_txt_dict);
   if (search.dict) level.max = search.dict.japanese.length.toString();
 }
 
-let file = document.getElementById("import_anki_csv_file") as HTMLInputElement;
+let file = document.getElementById("import_anki_txt_file") as HTMLInputElement;
 file.addEventListener("change", () => {
   let reader = new FileReader();
   reader.onload = () => {
     if (!reader.result) return;
-    search.readCSV(reader.result?.toString(), 0, 2);
-    localStorage.anki_csv_dict = JSON.stringify(search.dict);
+    search.readtxt(
+      reader.result?.toString(),
+      Number(englishCol.value),
+      Number(japaneseCol.value)
+    );
+    localStorage.anki_txt_dict = JSON.stringify(search.dict);
     if (search?.dict) {
       level.max = search.dict.japanese.length.toString();
     } else {
@@ -46,7 +56,7 @@ file.addEventListener("change", () => {
   reader.readAsText(file.files[0], "UTF-8");
 });
 
-csvInputRefresh?.addEventListener("click", () => {
+txtInputRefresh?.addEventListener("click", () => {
   if (
     search.dict === undefined
       ? true
@@ -54,16 +64,16 @@ csvInputRefresh?.addEventListener("click", () => {
           "すでに保存されたデータがあります。\r上書きして更新しますか？"
         )
   ) {
-    if (!(csvInput instanceof HTMLTextAreaElement)) {
-      throw "#anki_csv does not exist or is not an instance of HTMLInputElement!";
+    if (!(txtInput instanceof HTMLTextAreaElement)) {
+      throw "#anki_txt does not exist or is not an instance of HTMLInputElement!";
     }
-    search.readCSV(csvInput.value, 0, 2);
+    search.readtxt(txtInput.value, 2, 4);
     if (search?.dict) {
       level.max = search.dict.japanese.length.toString();
     } else {
       level.max = "1";
     }
-    localStorage.anki_csv_dict = JSON.stringify(search.dict);
+    localStorage.anki_txt_dict = JSON.stringify(search.dict);
     alert("データを更新しました。");
   }
 });

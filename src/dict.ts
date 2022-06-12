@@ -8,7 +8,8 @@ export class Search {
     | { english: [string[], string[], string[], string[]]; japanese: string[] }
     | undefined = undefined;
   constructor() {}
-  readCSV(csv: string, englishCol: number, japaneseCol: number) {
+  readtxt(txt: string, englishCol: number, japaneseCol: number) {
+    this.cacheClear();
     let tmpDict: {
       english: [string[], string[], string[], string[]];
       japanese: string[];
@@ -16,10 +17,15 @@ export class Search {
       english: [[], [], [], []],
       japanese: [],
     };
-    for (const value of csv.split("\n")) {
-      let tmp = value.split(",");
+    for (const value of txt.split("\n")) {
+      let tmp = value.split("\t");
+      if (tmp.length < englishCol || tmp.length < japaneseCol) {
+        break;
+      }
       tmpDict.english.map((v, idx) =>
-        v.push(tmp[0].toLowerCase().slice(0, tmp[englishCol].length - idx))
+        v.push(
+          tmp[englishCol].toLowerCase().slice(0, tmp[englishCol].length - idx)
+        )
       );
       tmpDict.japanese.push(tmp[japaneseCol]);
     }
@@ -41,7 +47,7 @@ export class Search {
         const tmp = word.slice(0, word.length - i).toLowerCase();
         const idx = this.dict.english[j].indexOf(tmp);
         if (idx !== -1) {
-          if (!this.cache.english.includes(safeDict.english[0][idx]))
+          if (!this.cache.english.includes(word))
             this.addCache(word, this.dict.japanese[idx], idx);
           if (idx >= minLevel && this.dict.japanese[idx]) {
             return this.dict.japanese[idx];
@@ -57,5 +63,17 @@ export class Search {
     this.cache.english.push(english);
     this.cache.japanese.push(japanese);
     this.cache.idx.push(idx);
+    if (this.cache.english.length > 3000) {
+      this.cache.english.shift();
+      this.cache.japanese.shift();
+      this.cache.idx.shift();
+    }
+  }
+  private cacheClear() {
+    this.cache = {
+      english: [],
+      japanese: [],
+      idx: [],
+    };
   }
 }

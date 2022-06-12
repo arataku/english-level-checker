@@ -31,7 +31,7 @@ input, textarea {
   width: calc(100% - 1.6rem);
 }
 
-#anki_csv {
+#anki_txt {
   color: var(--fg-color);
   resize: vertical;
   height: 7rem;
@@ -42,7 +42,7 @@ input, textarea {
   font-size: 1rem;
 }
 
-#anki_csv, #input {
+#anki_txt, #input {
   margin-top: 1.1rem;
 }
 
