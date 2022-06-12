@@ -4,13 +4,49 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./index.css">
+  <title>English-Level-Checker</title>
 </head>
 <body>
-  <p>あいうえお</p>
-  <textarea id="anki_csv">ここにankiのcsvのデータをペースト</textarea>
-  <textarea id="input">Paste some text here</textarea>
-  <p>Paste some text here</p>
-  <script src="build/main.js"></script>
+  <main>
+    <h1>English-Level-Checker</h1>
+
+    <section class="import_anki_txt">
+      <h2>ankiのtxtデータ読み込み</h2>
+      <div style="display: flex;">
+        <div id="anki_setting" style="margin-left: 10px;">
+          <section>
+            <p>英単語の列</p>
+            <input id="anki_setting_english_col" placeholder="英単語の列">
+          </section>
+          <section>
+            <p>日本語訳の列</p>
+            <input id="anki_setting_japanese_col" placeholder="日本語訳の列">
+          </section>
+        </div>
+        <input type="file" id="import_anki_txt_file" accept=".txt" style="width: 300px; height: fit-content;">
+      </div>
+      <textarea id="anki_txt" placeholder="ここにankiのtxtのデータをペースト" spellcheck="false" autocomplete="off"></textarea>
+      <button id="anki_txt_refresh">データを更新</button>
+    </section>
+
+    <section class="input_english">
+      <h2>英文を入力する</h2>
+      <textarea id="input" placeholder="Paste some text here..." autocomplete="off"></textarea>
+    </section>
+
+    <section class="result">
+      <h2>結果</h2>
+      <div style="display: flex;">
+        <input type="range" id="level" min="0" max="1" value="1">
+        <span id="range_value">1</span>
+      </div>
+      <div id="resultdisplay_main"></div>
+    </section>
+  </main>
+  <script src="./build/main.js"></script>
 </body>
 </html>

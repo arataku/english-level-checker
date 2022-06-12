@@ -1,0 +1,64 @@
+:root {
+  --bg-color: #f5fbff;
+  --fg-color: #1f1f1f;
+}
+
+body {
+  background-color: var(--bg-color);
+  font-family: 'Noto Sans JP', sans-serif;
+  padding: 0;
+  margin: 0;
+}
+
+h1, h2 {
+  margin: 0;
+}
+
+main {
+  padding: 1.5rem;
+  width: calc(100% - 3rem);
+  max-width: 750px;
+}
+
+main > section {
+  margin: 2rem 0;
+}
+
+input, textarea {
+  padding: 0.8rem;
+  outline: none;
+  font-family: 'Noto Sans JP', sans-serif;
+  width: calc(100% - 1.6rem);
+}
+
+#anki_txt {
+  color: var(--fg-color);
+  resize: vertical;
+  height: 7rem;
+  width: 80%;
+}
+
+#input {
+  font-size: 1rem;
+}
+
+#anki_txt, #input {
+  margin-top: 1.1rem;
+}
+
+#resultdisplay_main > div > span.linebreak {
+  display: block;
+}
+
+#resultdisplay_main > div > span.red {
+  color: red;
+}
+
+#resultdisplay_main > div > span.orange {
+  color: orange;
+}
+
+button {
+  display: block;
+  cursor: pointer;
+}

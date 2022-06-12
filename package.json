@@ -4,7 +4,9 @@
   "description": "一定よりも高いレベルの単語をハイライトしたり、 日本語に置き換えたりします。",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node build.js",
+    "watch": "node build.js --watch"
   },
   "repository": {
     "type": "git",
@@ -16,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/arataku/english-level-checker/issues"
   },
-  "homepage": "https://github.com/arataku/english-level-checker#readme"
+  "homepage": "https://github.com/arataku/english-level-checker#readme",
+  "dependencies": {
+    "esbuild": "^0.14.43"
+  }
 }
